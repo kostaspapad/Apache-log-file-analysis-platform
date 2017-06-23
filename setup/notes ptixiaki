@@ -1,0 +1,327 @@
+General:
+	TODOs:
+		na ftia3o tis litourgies tou admin px na vlepei tous users kai alla
+		meta to login na kanei sosto redirect
+		meta to log upload na kanei redirect
+		STYLES!!!
+
+		kodiko sto phpmyadmin
+		kalo kodiko gia admin user
+
+		na kanw delete ta files meta to upload
+		na ligei to session
+
+		na vlepei o xristis ta arxia pou exei anevasei
+		na mporei o xristis na diagrapsei ta arxia tou ( na ginete diagrafi sto accesslog kai sto user_files!)
+gia na filtraro to aetos-access.log .*.\ HTTP.1.."\ [0-9]..\ [0-9]{2,}
+====================================
+help sql
+====================================
+if (!$sql) {
+    printf("Error: %s\n", mysqli_error($con));
+    exit();
+}
+gia na vlepo ta gamoerrors
+------------------------------------
+$start = microtime(true);
+$time_elapsed_secs = microtime(true) - $start;
+	echo $time_elapsed_secs;
+gia na metrao to xrono ektelesis
+--------------------------------------
+REGEX GIA na metatreponte ta log se common log format  egrep -o ".*\ ([0-9]+)\ " apach3 > blab2
+
+prepei sto php.ini na valo date.timezone ="Europe/Athens"
+
+===================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+File uploads:
+	set sto php.ini to fileuploads = on
+	temp folder upload_tmp_dir ="c:/wamp/tmp"
+	na prosexo me to path tou uploads folder na exei full path
+	post_max_size = 750M
+	upload_max_filesize = 750M
+	max_execution_time = 5000   //83 minutes
+	max_input_time = 5000
+	memory_limit = 1000M
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+File uploads errors:
+	sto upload file pou den exei extension otan anevazo panw apo 1 me to idio name petaei ena error alla to arxio anevenei
+		gia parsing  me regex edo http://stackoverflow.com/questions/7603017/parse-apache-log-in-php-using-preg-match
+
+	TODOs:
+	Q:an exoun idio name oi xristes?
+	A:den xriazete an oi xristes einai unique
+
+	prepi na valw sto validation toy register sostous elenxous px query sth vasi gia na elenxei uname kai na to kanw DEBUG giati einai gtp
+
+	to uname pezei na einai to idio me to uid na sviso to ena pou xrisimopoihte gia na dinei sti vasi to username/uid
+	na alla3o tin metavliti name se filename
+
+	na vgalo to hardcoded full path gamo to xristo sou
+
+	na kanw function to parsing pou einai sto upload.php
+
+	na min afino na pernioute oi ides egrafes panw apo mia fora kata to upload px an kanw upload 2 fores to idio file exo tis idies egrafes 2 fores
+
+	na kanw to $conn me require sto function query_insert_user_files_db
+
+	apo to insert to to name toy table den prepi na einai me aftakia malon
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+User system TODOs:
+	hash salt
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Database structure:
+	TODOs:
+		na min afino dublicates ama valo unique pali gamiete kai ta afinei...
+		na ala3o ta pedia me kefalea TIME DATE
+
+INSERT INTO `access_log`( `uid`, `HOST`, `user_identifier`, `user_id`, `DATE`, `TIME`, `timezone`, `method`, `request`, `resource`, `protocol_type`, `status_code`, `obj_size`) VALUES (4,'102.167.1.2','-','-','1970-01-01',
+'00:03:00','-400', 'GET' , '/shuttle/missions/sts-49/','mission-sts-73.html','HTTP/1.0', 200, 3213)
+To resource an einai keno pernei '-'
+
+//to accfname einai gia na uparxei to onoma tou arxiou gia na ginonte ta join px
+//o xristis mporei na anevazei polla arxia kai gia na vgalo statistika gia to ka8ena
+// 3exorista prepi na uparxei afto to pedio
+CREATE TABLE access_log(
+  logid int(5) NOT NULL AUTO_INCREMENT,
+  accfname VARCHAR(50) NOT NULL,
+  uid VARCHAR(20) NOT NULL,
+  HOST VARCHAR(40) NOT NULL,
+  user_identifier VARCHAR(40) NOT NULL,
+  user_id VARCHAR(40) NOT NULL,
+  DATE DATE NOT NULL,
+  TIME TIME NOT NULL,
+  timezone VARCHAR(5) NOT NULL,
+  method VARCHAR(4) NOT NULL,
+  request TEXT NOT NULL,
+  resource TEXT NOT NULL,
+  protocol_type TEXT NOT NULL,
+  status_code INT(3) NOT NULL,
+  obj_size INT(10) NOT NULL,
+  PRIMARY KEY(logid)
+);
+
+CREATE TABLE users (
+   uid int(11) NOT NULL AUTO_INCREMENT,
+   fname varchar(45) NOT NULL,
+   lname varchar(45) NOT NULL,
+   email varchar(45) NOT NULL,
+   uname varchar(30) NOT NULL,
+   passwd varchar(100) NOT NULL,
+   UNIQUE (uid,email,uname),
+   PRIMARY KEY (uid)
+);
+
+CREATE TABLE user_files(
+  fid int(3) NOT NULL AUTO_INCREMENT,
+  uid VARCHAR(20) NOT NULL,
+  file_log_type VARCHAR(11) NOT NULL,
+  file_name TEXT(100) NOT NULL,
+  PRIMARY KEY(fid)
+);
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Register:
+
+	TODOs: Na vgalo tin emfanisi twn data meta tin epitixis egrafi
+			STYLES!!!
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+MyDetails:
+	TODOs; na emfanizei ta logs p anevase o xristis
+		STYLES!!!
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ADMIN:
+	TODOs; sta function na valo na kanei geniko query sti vasi
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+LOGIN:
+	TODO: na kanw modal login form gamaei
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+LOGS:
+
+	TODO
+		na dixnei ti arxeio exei anevasei o xristis kai an svistoun ta data tou na diagrafete
+	access log
+
+	127.0.0.1 user-identifier frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326
+
+	A "-" in a field indicates missing data.
+
+    127.0.0.1 is the IP address of the client (remote host) which made the request to the server.
+    user-identifier is the RFC 1413 identity of the client.
+    frank is the userid of the person requesting the document.
+    [10/Oct/2000:13:55:36 -0700] is the date, time, and time zone that the request was received, by default in strftime format %d/%b/%Y:%H:%M:%S %z.
+    "GET /apache_pb.gif HTTP/1.0" is the request line from the client. The method GET, /apache_pb.gif the resource requested, and HTTP/1.0 the HTTP protocol.
+    200 is the HTTP status code returned to the client. 2xx is a successful response, 3xx a redirection, 4xx a client error, and 5xx a server error.
+    2326 is the size of the object returned to the client, measured in bytes.
+
+    error log
+
+     [Fri Sep 09 10:42:29.902022 2011] [core:error] [pid 35708:tid 4328636416] [client 72.15.99.187] File does not exist: /usr/local/apache2/htdocs/favicon.ico
+
+// to errfname einai gia na uparxei to onoma tou arxiou gia na ginonte ta join px
+//o xristis mporei na anevazei polla arxia kai gia na vgalo statistika gia to ka8ena
+// 3exorista prepi na uparxei afto to pedio
+CREATE TABLE error_log(
+  errid INT(5) NOT NULL AUTO_INCREMENT,
+  errfname VARCHAR(50) NOT NULL,
+  uid VARCHAR(20) NOT NULL,
+  short_day VARCHAR(3) NOT NULL,
+  short_month VARCHAR(3) NOT NULL,
+  date DATE NOT NULL,
+  time TIME NOT NULL,
+  module VARCHAR(50) NOT NULL,
+  message TEXT(1000) NOT NULL,
+  PRIMARY KEY(errid)
+)
+CREATE TABLE client_req_log(
+	cid INT NOT NULL AUTO_INCREMENT,
+	errid INT NOT NULL,
+	c_ip varchar(12),
+	PRIMARY KEY(cid),
+)
+
+INSERT INTO `error_log`(`uid`, `short_day`, `short_month`, `date`, `time`, `module`, `message`) VALUES ('kostas', 'feb', 'aug', '2015-12-02', '10:59:22', '[error]', 'auifwhaoufawfawf')
+
+	The first item in the log entry is the date and time of the message. The next is the module producing the message (core, in this case) and the severity level of that message. This is followed by the process ID and, if appropriate, the thread ID, of the process that experienced the condition. Next, we have the client address that made the request. And finally is the detailed error message, which in this case indicates a request for a file that did not exist.
+
+Emerg 	Emergencies – system is unusable
+Alert 	Action must be taken immediately
+Crit 	Critical Conditions
+Error 	Error Conditions
+Warn 	Warning Conditions
+Notice 	Normal but significant condition
+Info 	Information
+Debug 	Debug-level messages
+
+inurl:apache_error filetype:log
+
+na vrw tropo na parsaro to upolipo error log file
+to pid tid isos a3izei na ta paro me regex
+
+
+
+TRUNCATE TABLE table_name
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-----SQL QUERYS accesslog
+
+1ari8mos sindesewn apo tade host/ip (host/time)
+
+
+
+
+TODO na valo HEAD requests
+
+
+1sindesis ana xwra (8elei geolocation script)
+
+
+1sindeseis apo ellada
+visitors=====================
+best visitors
+
+unique visitors
+
+
+hits =====================
+hits sto site
+
+hits ana page
+
+hits se page ana wra
+
+hits se page ana mera deftera triti tet
+
+hits se page ana week
+
+days of week hits/page
+
+hits ana country
+
+FILE TYPES ==================
+posa hits se html file
+SELECT COUNT(resource) FROM `access_log` where resource LIKE '%.html'
+
+posa se gif
+SELECT COUNT(resource) FROM `access_log` where resource LIKE '%.gif'
+
+posa se jpeg
+SELECT COUNT(resource) FROM `access_log` where resource LIKE '%.jpeg'
+
+se mpg
+SELECT COUNT(resource) FROM `access_log` where resource LIKE '%.mpg'
+
+txt
+SELECT COUNT(resource) FROM `access_log` where resource LIKE '%.txt'
+
+files me ta pio polla hits f8inousa seira
+SELECT resource,COUNT(resource) FROM access_log GROUP BY resource ORDER BY COUNT(resource) DESC
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+BROWSERS
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+alla
+oi sindeseis pou egine apo host me time range
+SELECT HOST,TIME FROM `access_log` WHERE TIME BETWEEN '00:00:09' AND '00:03:05'
+
+Egine================================================================================
+=====================================================================================
+=====================================================================================
+Number of req ana host
+
+1petiximena request(200/time)
+SELECT count(status_code) FROM `access_log` WHERE status_code >= 200 && status_code < 300
+
+1petiximena redirection(300/time)
+SELECT count(status_code) FROM `access_log` WHERE status_code >= 300 && status_code < 400
+
+1client error request(400/time)
+SELECT count(status_code) FROM `access_log` WHERE status_code >= 400 && status_code < 500
+
+1server error request(500/time)
+SELECT count(status_code) FROM `access_log` WHERE status_code >= 500 && status_code < 600
+
+
+2total get req
+SELECT count(method) FROM `access_log` WHERE method = 'GET'
+
+2total post req
+SELECT count(method) FROM `access_log` WHERE method = 'POST'
+
+
+1total bytes transfered obj_size einai ta byte tis selidas (bytes/time)
+SELECT sum(obj_size) FROM `access_log`
+
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+graphs
+to max value prepi na alla3i gia to bar chart (req/host) giati emfanizei ligous host
+
+
+60
+-10 stathis
+-6,5 kapno
+43.5
+-20 gia pramata
+23.5
+-5 gas
+18.5
